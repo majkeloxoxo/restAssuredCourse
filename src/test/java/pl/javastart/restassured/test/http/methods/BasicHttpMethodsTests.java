@@ -1,6 +1,11 @@
 package pl.javastart.restassured.test.http.methods;
 
 import org.testng.annotations.Test;
+import pl.javastart.main.pojo.Category;
+import pl.javastart.main.pojo.Pet;
+import pl.javastart.main.pojo.Tag;
+
+import java.util.Collections;
 
 import static io.restassured.RestAssured.given;
 
@@ -9,29 +14,26 @@ public class BasicHttpMethodsTests {
     @Test
     public void givenPetWhenPostPetThenPetIsCreatedTest() {
 
-        String pet = "{\n" +
-                "  \"id\": 123,\n" +
-                "  \"category\": {\n" +
-                "    \"id\": 1,\n" +
-                "    \"name\": \"dogs\"\n" +
-                "  },\n" +
-                "  \"name\": \"Burek\",\n" +
-                "  \"photoUrls\": [\n" +
-                "    \"http://photos.com/dog1.jpg\"\n" +
-                "  ],\n" +
-                "  \"tags\": [\n" +
-                "    {\n" +
-                "      \"id\": 1,\n" +
-                "      \"name\": \"dogs-category\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"status\": \"available\"\n" +
-                "}";
+        Category category = new Category();
+        category.setId(1);
+        category.setName("dogs");
 
-        given().log().uri().log().method()
+        Tag tag = new Tag();
+        tag.setId(1);
+        tag.setName("dogs-category");
+
+        Pet pet = new Pet();
+        pet.setId(123);
+        pet.setCategory(category);
+        pet.setPhotoUrls(Collections.singletonList("http://photos.com/dog1.jpg"));
+        pet.setTags(Collections.singletonList(tag));
+        pet.setStatus("available");
+
+        given().log().all()
                 .body(pet).contentType("application/json")
                 .when().post("https://swaggerpetstore.przyklady.javastart.pl/v2/pet")
-                .then().log().all().statusCode(200);
+                .then().log().all()
+                .statusCode(200);
     }
 
     @Test
@@ -39,30 +41,28 @@ public class BasicHttpMethodsTests {
         given().log().method().log().uri()
                 .pathParam("petId", 1)
                 .when().get("https://swaggerpetstore.przyklady.javastart.pl/v2/pet/{petId}")
-                .then().log().all().statusCode(200);
+                .then().log().all()
+                .statusCode(200);
     }
 
     @ Test
     public void givenExistingPetWhenUpdatePetNameThenPetIsChangedTest() {
 
-        String pet = "{\n" +
-                "  \"id\": 123,\n" +
-                "  \"category\": {\n" +
-                "    \"id\": 1,\n" +
-                "    \"name\": \"dogs\"\n" +
-                "  },\n" +
-                "  \"name\": \"Burek\",\n" +
-                "  \"photoUrls\": [\n" +
-                "    \"http://photos.com/dog1.jpg\"\n" +
-                "  ],\n" +
-                "  \"tags\": [\n" +
-                "    {\n" +
-                "      \"id\": 1,\n" +
-                "      \"name\": \"dogs-category\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"status\": \"available\"\n" +
-                "}";
+        Category category = new Category();
+        category.setId(1);
+        category.setName("dogs");
+
+        Tag tag = new Tag();
+        tag.setId(1);
+        tag.setName("dogs-category");
+
+        Pet pet = new Pet();
+        pet.setId(123);
+        pet.setCategory(category);
+        pet.setPhotoUrls(Collections.singletonList("http://photos.com/dog1.jpg"));
+        pet.setTags(Collections.singletonList(tag));
+        pet.setStatus("available");
+
 
         given().log().all()
                 .body(pet)
@@ -71,24 +71,7 @@ public class BasicHttpMethodsTests {
                 .then().log().all()
                 .statusCode(200);
 
-        pet = "{\n" +
-                "  \"id\": 123,\n" +
-                "  \"category\": {\n" +
-                "    \"id\": 1,\n" +
-                "    \"name\": \"dogs\"\n" +
-                "  },\n" +
-                "  \"name\": \"Reksio\",\n" +
-                "  \"photoUrls\": [\n" +
-                "    \"http://photos.com/dog1.jpg\"\n" +
-                "  ],\n" +
-                "  \"tags\": [\n" +
-                "    {\n" +
-                "      \"id\": 1,\n" +
-                "      \"name\": \"dogs-category\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"status\": \"available\"\n" +
-                "}";
+        pet.setName("Reksio");
 
         given().log().all()
                 .body(pet)
@@ -96,7 +79,38 @@ public class BasicHttpMethodsTests {
                 .when().put("https://swaggerpetstore.przyklady.javastart.pl/v2/pet")
                 .then().log().all()
                 .statusCode(200);
+    }
 
+    @Test
+    public void givenExistingPetIdWhenDeletingPetThenIsDeletedTest() {
 
+        Category category = new Category();
+        category.setId(1);
+        category.setName("dogs");
+
+        Tag tag = new Tag();
+        tag.setId(1);
+        tag.setName("dogs-category");
+
+        Pet pet = new Pet();
+        pet.setId(445);
+        pet.setCategory(category);
+        pet.setPhotoUrls(Collections.singletonList("http://photos.com/dog1.jpg"));
+        pet.setTags(Collections.singletonList(tag));
+        pet.setStatus("available");
+
+        given().log().all()
+                .body(pet)
+                .contentType("application/json")
+                .when().post("https://swaggerpetstore.przyklady.javastart.pl/v2/pet")
+                .then().log().all()
+                .statusCode(200);
+
+        given().log().all()
+                .contentType("application/json")
+                .pathParam("petId", pet.getId())
+                .when().delete("https://swaggerpetstore.przyklady.javastart.pl/v2/pet/{petId}")
+                .then().log().all()
+                .statusCode(200);
     }
 }
