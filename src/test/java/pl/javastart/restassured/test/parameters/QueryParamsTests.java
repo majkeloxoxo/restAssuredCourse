@@ -49,11 +49,5 @@ public class QueryParamsTests {
 
         assertTrue(Arrays.asList(pets).size() > 0, "List of pets");
 //        assertFalse(Arrays.asList(pets).isEmpty());
-
-
-
-
-
-
     }
 }
