@@ -7,6 +7,7 @@ import pl.javastart.main.pojo.Tag;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.testng.Assert.assertFalse;
@@ -38,16 +39,27 @@ public class QueryParamsTests {
                 .then().log().all()
                 .statusCode(200);
 
-        Pet[] pets = given().log().all()
-                .contentType("application/json")
+//        Pet[] pets = given().log().all()
+//                .contentType("application/json")
+//                .body(pet)
+//                .queryParam("status", "sold")
+//                .when().get("https://swaggerpetstore.przyklady.javastart.pl/v2/pet/findByStatus")
+//                .then().log().all()
+//                .statusCode(200)
+//                .extract().as(Pet[].class);
+
+//        assertTrue(Arrays.asList(pets).size() > 0, "List of pets");
+//        assertFalse(Arrays.asList(pets).isEmpty());
+
+        List<Pet> pets = given().log().all()
                 .body(pet)
+                .contentType("application/json")
                 .queryParam("status", "sold")
                 .when().get("https://swaggerpetstore.przyklady.javastart.pl/v2/pet/findByStatus")
                 .then().log().all()
                 .statusCode(200)
-                .extract().as(Pet[].class);
+                .extract().jsonPath().getList("", Pet.class);
 
-        assertTrue(Arrays.asList(pets).size() > 0, "List of pets");
-//        assertFalse(Arrays.asList(pets).isEmpty());
+        assertTrue(pets.size() > 0, "List of pets");
     }
 }
