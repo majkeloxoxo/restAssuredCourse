@@ -1,5 +1,9 @@
 package pl.javastart.restassured.test.serialization;
 
+import io.restassured.RestAssured;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pl.javastart.main.pojo.Category;
 import pl.javastart.main.pojo.Pet;
@@ -12,6 +16,11 @@ import static org.testng.Assert.assertEquals;
 
 
 public class SerializationAndDeserializationTests {
+
+//    @BeforeClass
+//    public void setupConfiguration() {
+//        RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
+//    }
 
     @Test
     public void givenPetWhenPostPetThenPetIsCreatedTest() {
@@ -31,13 +40,9 @@ public class SerializationAndDeserializationTests {
         pet.setTags(Collections.singletonList(tag));
         pet.setStatus("available");
 
-        Pet actualPet = given().log().all()
-                .body(pet)
-                .contentType("application/json")
+        Pet actualPet = given().body(pet).contentType("application/json")
                 .when().post("https://swaggerpetstore.przyklady.javastart.pl/v2/pet")
-                .then().log().all()
-                .statusCode(200)
-                .extract().as(Pet.class);
+                .then().statusCode(200).extract().as(Pet.class);
 
         assertEquals(actualPet.getId(), pet.getId(), "Pet id");
         assertEquals(actualPet.getCategory().getId(), pet.getCategory().getId(), "Category id");
@@ -66,19 +71,13 @@ public class SerializationAndDeserializationTests {
         pet.setTags(Collections.singletonList(tag));
         pet.setStatus("available");
 
-        given().log().all()
-                .body(pet)
-                .contentType("application/json")
+        given().body(pet).contentType("application/json")
                 .when().post("https://swaggerpetstore.przyklady.javastart.pl/v2/pet")
-                .then().log().all()
-                .statusCode(200);
+                .then().statusCode(200);
 
-        Pet actualPet = given().log().method().log().uri()
-                .pathParam("petId", pet.getId())
+        Pet actualPet = given().pathParam("petId", pet.getId())
                 .when().get("https://swaggerpetstore.przyklady.javastart.pl/v2/pet/{petId}")
-                .then().log().all()
-                .statusCode(200)
-                .extract().as(Pet.class);
+                .then().statusCode(200).extract().as(Pet.class);
 
         assertEquals(actualPet.getId(), pet.getId(), "Pet id");
         assertEquals(actualPet.getCategory().getId(), pet.getCategory().getId(), "Category id");
